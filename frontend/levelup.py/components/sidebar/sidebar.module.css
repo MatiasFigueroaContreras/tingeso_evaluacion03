@@ -1,0 +1,55 @@
+.sidebar {
+    box-sizing: border-box;
+    width: 310px;
+    height: 100vh;
+    padding: 30px;
+    background-color: #0E1522;
+    color: white;
+    box-shadow: 3px 0px 3px 0px rgba(0, 0, 0, 0.30);
+}
+
+.sidebar hr {
+    height: 2px;
+    background-color: #8f8f8f;
+    border: none;
+    border-radius: 12px;
+}
+
+.logo {
+    text-align: center;
+    font-size: 28px;
+    margin-top: 16px;
+    margin-bottom: 22px;
+}
+
+.logo b {
+    color: #FFE500;
+}
+
+.logo span {
+    color: #00FFF0;
+}
+
+.menu {
+    display: grid;
+    margin-top: 32px;
+    padding: 10px;
+    gap: 28px;
+}
+
+.menu .link {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 6px 0 6px 12px;
+    border-radius: 8px;
+}
+
+.menu .link:hover {
+    background-color: #1E2939;
+}
+
+.menu .link h3 {
+    font-weight: 600;
+    font-size: 21px;
+}
