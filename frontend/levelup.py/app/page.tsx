@@ -1,3 +1,10 @@
+import Timer from "@/components/timer/Timer";
+
 export default function Home() {
-    return <>hola</>;
+    return (
+        <>
+            hola 
+            <Timer dateStart={new Date()}/>
+        </>
+    );
 }

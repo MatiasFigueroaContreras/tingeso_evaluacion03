@@ -28,7 +28,6 @@ export default function subirPregunta() {
         catch (error: AxiosError | any) {
             if (error.response === undefined || error.response.status >= 500) {
                 console.log(error);
-                console.log("test");
             } else {
                 console.log(error);
             }
@@ -71,7 +70,7 @@ export default function subirPregunta() {
                         <option value="dificultad" disabled>
                             Seleccione la dificultad
                         </option>
-                        <option value="BASCIO">Basico</option>
+                        <option value="BASICO">Basico</option>
                         <option value="INTERMEDIO">Intermedio</option>
                         <option value="AVANZADO">Avanzado</option>
                     </select>

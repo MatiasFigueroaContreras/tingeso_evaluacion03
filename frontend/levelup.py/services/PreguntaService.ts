@@ -12,7 +12,7 @@ class PreguntaService {
                 dificultad: difficulty
             },
             {
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: { "Content-Type": "multipart/form-data" }
             }
         )
     }

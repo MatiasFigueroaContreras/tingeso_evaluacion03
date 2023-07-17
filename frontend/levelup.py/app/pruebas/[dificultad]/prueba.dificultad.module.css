@@ -1,0 +1,27 @@
+.preguntas {
+    display: grid;
+    gap: 30px;
+}
+
+.button {
+    width: 250px;
+    background: #0E1522;
+    border: none;
+    border-radius: 6px;
+    text-align: center;
+    padding: 8px 0 8px 0;
+    justify-self: center;
+
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+    transition: all 150ms ease-in-out;
+}
+
+.button:hover {
+    cursor: pointer;
+    color: #FFE500;
+    background-color: #131c2e;
+    box-shadow: 2px 5px 5px 0px rgba(0, 0, 0, 0.35);
+}

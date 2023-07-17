@@ -1,5 +1,7 @@
 .sidebar {
     box-sizing: border-box;
+    position: sticky;
+    top: 0;
     width: 310px;
     height: 100vh;
     padding: 30px;
