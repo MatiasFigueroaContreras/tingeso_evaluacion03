@@ -7,30 +7,46 @@ import { Baloo_2 } from "next/font/google";
 
 const baloo = Baloo_2({ subsets: ["latin"] });
 
+export type TPregunta = {
+    id: number;
+    codigo: string;
+    respuesta: string;
+    dificultad: string;
+}
+
 export default function Pregunta({
     numero,
-    codigo,
+    pregunta,
+    userAnswer,
+    onChangeAnswer,
+    isFinished,
 }: {
     numero: number;
-    codigo: string;
+    pregunta: TPregunta;
+    userAnswer: string;
+    onChangeAnswer: (userAnswer: string, index: number) => void;
+    isFinished: boolean
 }) {
     return (
-        <section className={styles.pregunta}>
+        <section id={numero.toString()} className={styles.pregunta}>
             <h3>PREGUNTA {numero}</h3>
-            <p>Señale que es lo que imprime el siguiente codigo</p>
+            <p>Señale que es lo que imprime el siguiente código:</p>
             <CodeMirror
-                value={codigo}
+                value={pregunta.codigo}
                 theme={codeTheme}
                 className={styles.code}
                 extensions={[python()]}
-                minHeight="300px"
-                maxWidth="900px"
+                minHeight="250px"
+                maxWidth="48vw"
                 editable={false}
+                readOnly={true}
             />
             <textarea
+                defaultValue={userAnswer}
                 className={`${styles.answer} ${baloo.className}`}
                 placeholder="Ingrese la salida del código"
-                required
+                onChange={(e) => onChangeAnswer(e.target.value, numero - 1)}
+                readOnly={isFinished}
             />
         </section>
     );

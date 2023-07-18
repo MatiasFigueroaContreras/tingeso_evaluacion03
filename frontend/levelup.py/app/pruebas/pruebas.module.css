@@ -29,12 +29,12 @@
 }
 
 .buttons .button {
-    width: 250px;
+    width: 12vw;
     background: #0E1522;
     border: none;
     border-radius: 8px;
     text-align: center;
-    padding: 6px 0 6px 0;
+    padding: 6px 15px;
 
     color: white;
     font-size: 20px;

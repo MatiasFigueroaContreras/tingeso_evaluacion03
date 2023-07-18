@@ -15,5 +15,6 @@ a {
 }
 
 .app {
-    margin: 40px 6vw 35px 6vw;
+    box-sizing: border-box;
+    margin: 40px 6vw;
 }

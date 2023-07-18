@@ -1,7 +1,9 @@
 .pregunta {
     color: #000;
     font-weight: 600;
-    font-size: 20px
+    font-size: 20px;
+    width: 50vw;
+    max-width: 50vw;
 }
 
 .pregunta h3 {
@@ -13,9 +15,9 @@
 .code {
     box-sizing: border-box;
     margin-top: 10px;
-    width: 900px;
-    max-width: 900px;
-    min-width: 900px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
     border-radius: 6px;
     background: #0E1522;
     box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.25);
@@ -26,10 +28,10 @@
 
 .answer {
     box-sizing: border-box;
-    width: 550px;
+    width: 60%;
     height: 45px;
-    max-width: 550px;
-    min-width: 550px;
+    max-width: 100%;
+    min-width: 60%;
     min-height: 45px;
     margin-top: 25px;
     background: #FFF;
@@ -38,7 +40,6 @@
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     padding: 6px 15px 6px 15px;
 
-    /* color: #2B2B2B; */
     color: #000;
     font-weight: 600;
     font-size: 18px;
