@@ -1,0 +1,37 @@
+.grade-feedback {
+    display: flex;
+    flex-direction: column;
+    width: 14vw;
+    height: 120px;
+    border-radius: 6px;
+    border: 2px solid #0E1522;
+    background: #FFF;
+    color: #000;
+    padding: 10px 1vw;
+    font-weight: 600;
+}
+
+.grade-feedback h3 {
+    font-size: 18px;
+    align-self: center;
+}
+
+.grade-feedback hr {
+    height: 1px;
+    margin-top: 2px;
+    border: none;
+    background-color: #0E1522;
+}
+
+.grade-feedback span {
+    display: flex;
+    width: 3.2vw;
+    height: 3.2vw;
+    font-size: 20px;
+    border-radius: 6px;
+    border: 2px solid #0E1522;
+    background: #EEEDF0;
+    justify-content: center;
+    align-items: center;
+    margin: auto auto;
+}

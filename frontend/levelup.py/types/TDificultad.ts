@@ -1,0 +1,1 @@
+export type TDificultad = "basico" | "intermedio" | "avanzado"

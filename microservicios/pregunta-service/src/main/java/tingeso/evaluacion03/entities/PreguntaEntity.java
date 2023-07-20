@@ -15,7 +15,9 @@ public class PreguntaEntity {
     @SequenceGenerator(name = "pregunta_sequence", sequenceName = "pregunta_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pregunta_sequence")
     private Integer id;
+    @Column(columnDefinition = "TEXT")
     private String codigo;
+    @Column(columnDefinition = "TEXT")
     private String respuesta;
     @Enumerated(EnumType.STRING)
     private Dificultad dificultad;

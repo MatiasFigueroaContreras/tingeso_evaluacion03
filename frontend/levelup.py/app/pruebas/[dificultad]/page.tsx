@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "./prueba.dificultad.module.css";
-import Pregunta, { TPregunta } from "@/components/pregunta/Pregunta";
+import Pregunta from "@/components/pregunta/Pregunta";
 import TitleHeader from "@/components/titleheader/TitleHeader";
 import PreguntaService from "@/services/PreguntaService";
 import SectionNav from "@/components/sectionnav/SectionNav";
@@ -10,13 +10,26 @@ import { AxiosError } from "axios";
 import { usePathname } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import secureLocalStorage from "react-secure-storage";
+import GradeFeedback from "@/components/gradefeedback/GradeFeedback";
+import { TPregunta } from "@/types/TPregunta";
+import { PruebaStorageManager } from "@/public/localStorageManager";
+import { TDificultad } from "@/types/TDificultad";
+import { TPrueba } from "@/types/TPrueba";
 
 export default function pruebaDificultad() {
+    const [pruebaStorageManager, setPruebaStorageManager] =
+        useState<PruebaStorageManager>();
     const [difficulty, setDifficulty] = useState("");
     const [preguntas, setPreguntas] = useState([] as TPregunta[]);
-    const [respuestas, setRespuestas] = useState([] as string[]);
-    const [finished, setFinished] = useState(false)
+    const [respuestas, setRespuestas] = useState(["", "", "", ""]);
+    const [boolResults, setBoolResults] = useState([
+        false,
+        false,
+        false,
+        false,
+    ]);
+    const [finished, setFinished] = useState(false);
+    const [dateStart, setDateStart] = useState(new Date());
     const pathname = usePathname();
     const router = useRouter();
 
@@ -25,15 +38,37 @@ export default function pruebaDificultad() {
     };
 
     const handleUserAnswerChanges = (userAnswer: string, index: number) => {
-        console.log(userAnswer)
         respuestas[index] = userAnswer;
         setRespuestas(respuestas);
-        secureLocalStorage.setItem("respuestas", respuestas);
-    }
+        pruebaStorageManager?.setRespuestas(respuestas);
+    };
+
+    const getBoolResults = (answers: string[], questions: TPregunta[]) => {
+        return answers.map(
+            (answer, index) => answer.replace(/\r/g, '') === questions[index].respuesta.replace(/\r/g, '')
+        );
+    };
+
+    const calculateGrade = (boolResults: boolean[]) => {
+        const results = boolResults.map((boolResult) =>
+            boolResult ? 7.0 : 1.0
+        );
+
+        return (
+            results.reduce((acc, result) => acc + result, 0) / results.length
+        );
+    };
 
     const handleFinishTest = () => {
-        setFinished(true)
-    }
+        setFinished(true);
+        pruebaStorageManager?.setFinalizado(true);
+        setBoolResults(getBoolResults(respuestas, preguntas));
+    };
+
+    const handleStartOtherTest = () => {
+        pruebaStorageManager?.remove();
+        router.replace("/pruebas");
+    };
 
     useEffect(() => {
         const fetchPreguntas = async (difficulty: string, number: number) => {
@@ -42,34 +77,66 @@ export default function pruebaDificultad() {
                     difficulty,
                     number
                 );
-                setPreguntas(response.data);
-                secureLocalStorage.setItem("preguntas", response.data);
-                console.log(response);
+                return response.data as TPregunta[];
             } catch (error: AxiosError | any) {
                 console.log(error);
             }
+
+            return [] as TPregunta[];
         };
-        const difficultyTemp = pathname.split("/")[2];
-        if (
-            difficultyTemp != "basico" &&
-            difficultyTemp != "intermedio" &&
-            difficultyTemp != "avanzado"
-        ) {
-            // ERROR 404
-        }
 
-        setDifficulty(difficultyTemp);
+        const verifySetPruebaStorageManager = () => {
+            const difficultyTemp = pathname.split("/")[2];
+            try {
+                const pruebaStorageManager = new PruebaStorageManager(
+                    difficultyTemp as TDificultad
+                );
+                setPruebaStorageManager(pruebaStorageManager);
+                return pruebaStorageManager;
+            } catch (e) {
+                console.log(e);
+                router.replace("/prueba");
+                alert(e);
+                return;
+            }
+        };
+        const setAll = (prueba: TPrueba) => {
+            setDifficulty(prueba.dificultad);
+            setPreguntas(prueba.preguntas);
+            setRespuestas(prueba.respuestas);
+            setBoolResults(getBoolResults(prueba.respuestas, prueba.preguntas));
+            setDateStart(new Date(prueba.inicio));
+            setFinished(prueba.finalizado);
+        };
 
-        const preguntasGuardadas =
-            (secureLocalStorage.getItem("preguntas") as TPregunta[]) ?? [];
-        if (preguntasGuardadas.length == 0) {
-            fetchPreguntas(difficultyTemp, 4);
-            setRespuestas(["", "", "", ""])
-        } else {
-            setPreguntas(preguntasGuardadas);
-            const respuestasGuardadas = secureLocalStorage.getItem("respuestas") as string[] ?? ["", "", "", ""];
-            setRespuestas(respuestasGuardadas);
-        }
+        const init = async () => {
+            const pruebaStorageM = verifySetPruebaStorageManager();
+            if (pruebaStorageM) {
+                if (
+                    PruebaStorageManager.existsPrueba(pruebaStorageM.dificultad)
+                ) {
+                    const prueba = pruebaStorageM.getAll();
+                    setAll(prueba);
+                } else {
+                    const questions = await fetchPreguntas(
+                        pruebaStorageM.dificultad,
+                        4
+                    );
+                    if (questions.length != 4) {
+                        // Poner mensaje
+                    }
+                    const prueba = pruebaStorageM.setAll(
+                        questions,
+                        ["", "", "", ""],
+                        dateStart,
+                        false
+                    );
+                    setAll(prueba);
+                }
+            }
+        };
+
+        init();
     }, []);
 
     return (
@@ -105,14 +172,31 @@ export default function pruebaDificultad() {
                     )}
                 </div>
                 <section className={styles["side-helpers"]}>
-                    <Timer dateStart={new Date()} />
-                    <SectionNav amount={4} onSectionClick={handleSectionNav} />
-                    <button
-                        onClick={handleFinishTest}
-                        className={styles.button}
-                    >
-                        Terminar prueba
-                    </button>
+                    {finished ? (
+                        <GradeFeedback grade={calculateGrade(boolResults)} />
+                    ) : null}
+                    <Timer dateStart={dateStart} run={!finished} />
+                    <SectionNav
+                        amount={4}
+                        onSectionClick={handleSectionNav}
+                        isFinished={finished}
+                        boolResults={boolResults}
+                    />
+                    {finished ? (
+                        <button
+                            onClick={handleStartOtherTest}
+                            className={styles.button}
+                        >
+                            Iniciar otra prueba
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleFinishTest}
+                            className={styles.button}
+                        >
+                            Terminar prueba
+                        </button>
+                    )}
                 </section>
             </div>
         </>

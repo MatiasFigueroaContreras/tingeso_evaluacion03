@@ -32,7 +32,7 @@ export default function subirPregunta() {
         if (!code.replace(/\s/g, "").length) {
             setAlertType(FeedbackTypes.Informative);
             setTimeout(() => {
-                setFeedback("Debe ingresar código");
+                setFeedback("Debes ingresar el código del programa en Python");
                 setIsSubmitting(false);
             }, 300);
             return;
