@@ -1,0 +1,100 @@
+# Creacion BD
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pregunta-postgresdb
+spec:
+  serviceName: pregunta-db-host
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pregunta-postgresdb
+  template:
+    metadata:
+      labels:
+        app: pregunta-postgresdb
+    spec:
+      containers:
+        - name: database
+          image: postgres:latest
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: preguntas_tingeso
+            - name: POSTGRES_USER
+              value: tingeso
+            - name: POSTGRES_PASSWORD
+              value: tingeso
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: 
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 2Mi
+---
+# Service BD
+apiVersion: v1
+kind: Service
+metadata:
+  name: pregunta-db-service
+spec:
+  selector:
+    app: pregunta-postgresdb
+  ports:   
+  - protocol: TCP
+    port: 5432
+
+
+---
+# Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: pregunta-service-deployment
+    labels:
+        app: pregunta-service
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: pregunta-service
+    template:
+        metadata:
+            labels:
+                app: pregunta-service
+        spec:
+            containers:
+                - name: pregunta-service
+                  image: matiasfc/tingeso3_pregunta_service:latest
+                  ports:
+                    - containerPort: 8090
+                  env:
+                    - name: DB_HOST
+                      value: pregunta-db-service:5432
+                    - name: DB_NAME
+                      value: preguntas_tingeso
+                    - name: DB_USERNAME
+                      value: tingeso
+                    - name: DB_PASSWORD
+                      value: tingeso
+
+---
+# Servicio pregunta
+apiVersion: v1
+kind: Service
+metadata:
+  name: pregunta-service
+spec:
+  selector:
+    app: pregunta-service
+  ports:   
+  - protocol: TCP
+    port: 8090
+  type: LoadBalancer

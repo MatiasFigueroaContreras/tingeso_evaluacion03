@@ -18,6 +18,10 @@ export default function pruebas() {
                             seleccionado de igual puntaje.
                         </li>
                         <li>
+                            La prueba tiene una calificación final entre 1.0 y
+                            7.0.
+                        </li>
+                        <li>
                             Las preguntas cuentan con una sección de código en
                             Python.
                         </li>
@@ -29,10 +33,10 @@ export default function pruebas() {
                     </ul>
                 </section>
                 <section className={styles.section}>
-                    <h3>COMENZAR</h3>
+                    <h3>COMENZAR O CONTINUAR</h3>
                     <p>
                         Seleccione el nivel de dificultad de las preguntas para
-                        comenzar la prueba
+                        comenzar o continuar la prueba
                     </p>
                     <div className={styles.buttons}>
                         <Link className={styles.button} href="/pruebas/basico">

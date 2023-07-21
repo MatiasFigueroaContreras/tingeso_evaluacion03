@@ -34,6 +34,10 @@ export default function subirPregunta() {
             setTimeout(() => {
                 setFeedback("Debes ingresar el código del programa en Python");
                 setIsSubmitting(false);
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
             }, 300);
             return;
         }
@@ -42,6 +46,10 @@ export default function subirPregunta() {
             setTimeout(() => {
                 setFeedback("Pregunta ingresada correctamente!");
                 setIsSubmitting(false);
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
             }, 300);
             setAlertType(FeedbackTypes.Success);
         } catch (error: AxiosError | any) {
@@ -52,11 +60,16 @@ export default function subirPregunta() {
                         "Ocurrió un error al intentar ingresar la pregunta, inténtalo más tarde"
                     );
                     setIsSubmitting(false);
+                    window.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                    });
                 }, 300);
             } else {
                 setTimeout(() => {
                     setFeedback(error.response.data);
                     setIsSubmitting(false);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
                 }, 300);
             }
         }
@@ -105,7 +118,7 @@ export default function subirPregunta() {
                         <option value="AVANZADO">Avanzado</option>
                     </select>
                 </div>
-                <ButtonStyled text="Subir pregunta" disabled={isSubmitting} />
+                <ButtonStyled text="Subir pregunta" disabled={isSubmitting} type="submit"/>
             </form>
         </>
     );
