@@ -3,14 +3,21 @@
 import { useEffect, useState } from "react";
 import styles from "./timer.module.css";
 
-export default function Timer({ dateStart, run = true }: { dateStart: Date, run?: boolean }) {
+export default function Timer({
+    dateStart,
+    run = true,
+    dateEnd,
+}: {
+    dateStart: Date;
+    run?: boolean;
+    dateEnd?: Date;
+}) {
     const [hours, setHours] = useState("00");
     const [minutes, setMinutes] = useState("00");
     const [seconds, setSeconds] = useState("00");
     useEffect(() => {
-        const setTime = () => {
-            const now = new Date();
-            const difference = now.getTime() - dateStart.getTime();
+        const setTime = (start: Date, end: Date) => {
+            const difference = end.getTime() - start.getTime();
 
             const h = Math.floor(difference / (1000 * 60 * 60));
             setHours(h > 9 ? h.toString() : "0" + h);
@@ -20,14 +27,20 @@ export default function Timer({ dateStart, run = true }: { dateStart: Date, run?
 
             const s = Math.floor((difference / 1000) % 60);
             setSeconds(s > 9 ? s.toString() : "0" + s);
-        }
+        };
+
+        const setTimeNow = () => {
+            const now = new Date();
+            setTime(dateStart, now);
+        };
 
         if (run) {
-            const interval = setInterval(setTime, 1000);
+            const interval = setInterval(setTimeNow, 1000);
             return () => clearInterval(interval);
-        }
-        else {
-            setTime();
+        } else {
+            dateEnd
+                ? setTime(dateStart, dateEnd)
+                : setTime(dateStart, new Date());
         }
     }, [dateStart, run]);
     return (

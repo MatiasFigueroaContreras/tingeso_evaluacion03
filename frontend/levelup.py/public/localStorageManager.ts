@@ -13,12 +13,13 @@ export class PruebaStorageManager {
         return secureLocalStorage.getItem(this.dificultad) as TPrueba;
     }
 
-    setAll(preguntas: TPregunta[], respuestas: string[], inicio: Date, finalizado: boolean) {
+    setAll(preguntas: TPregunta[], respuestas: string[], inicio: Date, final: Date, finalizado: boolean) {
         const prueba: TPrueba = {
             dificultad: this.dificultad,
             preguntas: preguntas,
             respuestas: respuestas,
             inicio: inicio.getTime(),
+            final: final.getTime(),
             finalizado: finalizado
         }
 
@@ -41,6 +42,12 @@ export class PruebaStorageManager {
     setInicio(inicio: Date) {
         const prueba = secureLocalStorage.getItem(this.dificultad) as TPrueba;
         prueba.inicio = inicio.getTime();
+        secureLocalStorage.setItem(this.dificultad, prueba);
+    }
+
+    setFinal(final: Date) {
+        const prueba = secureLocalStorage.getItem(this.dificultad) as TPrueba;
+        prueba.final = final.getTime();
         secureLocalStorage.setItem(this.dificultad, prueba);
     }
 

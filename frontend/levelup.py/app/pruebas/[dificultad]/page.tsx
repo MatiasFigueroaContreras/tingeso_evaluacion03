@@ -18,6 +18,9 @@ import { TPregunta } from "@/types/TPregunta";
 import { PruebaStorageManager } from "@/public/localStorageManager";
 import { TDificultad } from "@/types/TDificultad";
 import { TPrueba } from "@/types/TPrueba";
+import FeedbackAlert, {
+    FeedbackTypes,
+} from "@/components/feedbackalert/FeedbackAlert";
 
 export default function pruebaDificultad({
     params,
@@ -37,8 +40,10 @@ export default function pruebaDificultad({
     ]);
     const [finished, setFinished] = useState(false);
     const [dateStart, setDateStart] = useState(new Date());
+    const [dateEnd, setDateEnd] = useState(new Date());
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [errorFeedback, setErrorFeedback] = useState("");
 
     const [recall, setRecall] = useState(0);
     const router = useRouter();
@@ -73,9 +78,12 @@ export default function pruebaDificultad({
 
     const handleFinishTest = () => {
         setIsSubmitting(true);
+        const endDate = new Date();
+        pruebaStorageManager?.setFinalizado(true);
+        pruebaStorageManager?.setFinal(endDate);
         setTimeout(() => {
             setFinished(true);
-            pruebaStorageManager?.setFinalizado(true);
+            setDateEnd(endDate);
             setBoolResults(getBoolResults(respuestas, preguntas));
             window.scrollTo({ top: 0, behavior: "smooth" });
             setIsSubmitting(false);
@@ -87,15 +95,6 @@ export default function pruebaDificultad({
         setLoading(true);
         pruebaStorageManager?.remove();
         setRecall(recall + 1);
-
-        setTimeout(() => {
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth",
-            });
-            setIsSubmitting(false);
-            setLoading(false);
-        }, 350);
     };
 
     useEffect(() => {
@@ -105,22 +104,11 @@ export default function pruebaDificultad({
                     difficulty,
                     number
                 );
-                if (response.data.length != number) {
-                    alert(
-                        "Hubo un error cargando las preguntas, inténtalo más tarde"
-                    );
-                    router.replace("/pruebas");
-                }
 
                 return response.data as TPregunta[];
             } catch (error: AxiosError | any) {
-                alert(
-                    "Hubo un error cargando las preguntas, inténtalo más tarde"
-                );
-                router.replace("/pruebas");
+                return [] as TPregunta[];
             }
-
-            return [] as TPregunta[];
         };
 
         const setAll = (prueba: TPrueba) => {
@@ -129,6 +117,7 @@ export default function pruebaDificultad({
             setRespuestas(prueba.respuestas);
             setBoolResults(getBoolResults(prueba.respuestas, prueba.preguntas));
             setDateStart(new Date(prueba.inicio));
+            setDateEnd(new Date(prueba.final));
             setFinished(prueba.finalizado);
         };
 
@@ -144,31 +133,29 @@ export default function pruebaDificultad({
             return pruebaStorageManager;
         };
 
-        const setByPruebaStorageManager = async (
-            pruebaStorageM: PruebaStorageManager
-        ) => {
-            if (pruebaStorageM) {
-                if (
-                    PruebaStorageManager.existsPrueba(pruebaStorageM.dificultad)
-                ) {
-                    const prueba = pruebaStorageM.getAll();
-                    setAll(prueba);
-                } else {
-                    const questions = await fetchPreguntas(
-                        pruebaStorageM.dificultad,
-                        4
-                    );
-                    if(questions.length == 4){
-                        const prueba = pruebaStorageM.setAll(
-                            questions,
-                            ["", "", "", ""],
-                            new Date(),
-                            false
-                        );
-                        setAll(prueba);
-                    }
-                }
+        const getPrueba = async (pruebaStorageM: PruebaStorageManager) => {
+            if (PruebaStorageManager.existsPrueba(pruebaStorageM.dificultad)) {
+                return pruebaStorageM.getAll();
             }
+
+            const questions = await fetchPreguntas(
+                pruebaStorageM.dificultad,
+                4
+            );
+
+            if (questions.length != 4) {
+                return null;
+            }
+
+            const prueba = pruebaStorageM.setAll(
+                questions,
+                ["", "", "", ""],
+                new Date(),
+                new Date(),
+                false
+            );
+
+            return prueba;
         };
 
         const startTest = async () => {
@@ -177,15 +164,22 @@ export default function pruebaDificultad({
             );
             setPruebaStorageManager(pruebaStorageM);
 
-            if (recall == 0) {
-                setLoading(true);
-                setByPruebaStorageManager(pruebaStorageM);
-                setTimeout(() => {
-                    setLoading(false);
-                }, 350);
-            } else {
-                setByPruebaStorageManager(pruebaStorageM);
-            }
+            setLoading(true);
+            const prueba = await getPrueba(pruebaStorageM);
+            setTimeout(() => {
+                prueba
+                    ? setAll(prueba)
+                    : setErrorFeedback(
+                          "Hubo un error cargando las preguntas, inténtalo más tarde"
+                      );
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+                setLoading(false);
+                setIsSubmitting(false);
+            }, 350);
+
         };
 
         startTest();
@@ -197,64 +191,79 @@ export default function pruebaDificultad({
                 title={`Prueba de nivel ${difficulty}`}
                 subTitle="conteste las preguntas a continuación"
             />
-            <div className={styles.prueba}>
-                {loading ? (
-                    <QuestionsSkeleton amount={4} />
-                ) : (
-                    <div className={styles.preguntas}>
-                        {preguntas.map((pregunta: TPregunta, index) =>
-                            index ? (
-                                <Fragment key={index}>
-                                    <hr className={styles["hr-pregunta"]} />
+            {errorFeedback ? (
+                <FeedbackAlert
+                    type={FeedbackTypes.Error}
+                    feedback={errorFeedback}
+                />
+            ) : (
+                <div className={styles.prueba}>
+                    {loading ? (
+                        <QuestionsSkeleton amount={4} />
+                    ) : (
+                        <div className={styles.preguntas}>
+                            {preguntas.map((pregunta: TPregunta, index) =>
+                                index ? (
+                                    <Fragment key={index}>
+                                        <hr className={styles["hr-pregunta"]} />
+                                        <Pregunta
+                                            numero={index + 1}
+                                            pregunta={pregunta}
+                                            userAnswer={respuestas[index]}
+                                            onChangeAnswer={
+                                                handleUserAnswerChanges
+                                            }
+                                            isFinished={finished}
+                                        />
+                                    </Fragment>
+                                ) : (
                                     <Pregunta
+                                        key={index}
                                         numero={index + 1}
                                         pregunta={pregunta}
                                         userAnswer={respuestas[index]}
                                         onChangeAnswer={handleUserAnswerChanges}
                                         isFinished={finished}
                                     />
-                                </Fragment>
-                            ) : (
-                                <Pregunta
-                                    key={index}
-                                    numero={index + 1}
-                                    pregunta={pregunta}
-                                    userAnswer={respuestas[index]}
-                                    onChangeAnswer={handleUserAnswerChanges}
-                                    isFinished={finished}
-                                />
-                            )
-                        )}
-                    </div>
-                )}
-                <section className={styles["side-helpers"]}>
-                    {finished ? (
-                        <GradeFeedback grade={calculateGrade(boolResults)} />
-                    ) : null}
-                    <Timer dateStart={dateStart} run={!finished} />
-                    <SectionNav
-                        amount={4}
-                        onSectionClick={handleSectionNav}
-                        isFinished={finished}
-                        boolResults={boolResults}
-                    />
-                    {finished ? (
-                        <ButtonStyled
-                            text="Iniciar otra prueba"
-                            onClick={handleStartOtherTest}
-                            extraClass={styles.button}
-                            disabled={isSubmitting}
-                        />
-                    ) : (
-                        <ButtonStyled
-                            text="Terminar prueba"
-                            onClick={handleFinishTest}
-                            extraClass={styles.button}
-                            disabled={isSubmitting}
-                        />
+                                )
+                            )}
+                        </div>
                     )}
-                </section>
-            </div>
+                    <section className={styles["side-helpers"]}>
+                        {finished ? (
+                            <GradeFeedback
+                                grade={calculateGrade(boolResults)}
+                            />
+                        ) : null}
+                        <Timer
+                            dateStart={dateStart}
+                            run={!finished}
+                            dateEnd={dateEnd}
+                        />
+                        <SectionNav
+                            amount={4}
+                            onSectionClick={handleSectionNav}
+                            isFinished={finished}
+                            boolResults={boolResults}
+                        />
+                        {finished ? (
+                            <ButtonStyled
+                                text="Iniciar otra prueba"
+                                onClick={handleStartOtherTest}
+                                extraClass={styles.button}
+                                disabled={isSubmitting}
+                            />
+                        ) : (
+                            <ButtonStyled
+                                text="Terminar prueba"
+                                onClick={handleFinishTest}
+                                extraClass={styles.button}
+                                disabled={isSubmitting}
+                            />
+                        )}
+                    </section>
+                </div>
+            )}
         </>
     );
 }

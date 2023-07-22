@@ -1,0 +1,47 @@
+.main {
+    display: grid;
+    gap: 20px;
+}
+
+.main h2 {
+    font-size: 22px;
+}
+
+.section {
+    color: #000;
+    font-weight: 600;
+    font-size: 20px
+}
+
+.section h3 {
+    color: #2B2B2B;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.list {
+    list-style-position: inside;
+    margin-left: 15px;
+}
+
+
+.desafio {
+    display: flex;
+    gap: 12px;
+}
+
+.desafio p {
+    font-weight: 500;
+    font-size: 20px;
+    color: #2B2B2B;
+}
+
+.desafio .link {
+    font-weight: 600;
+    font-size: 20px;
+    transition: all 100ms ease-in-out;
+}
+
+.desafio .link:hover {
+    font-weight: 700;
+}

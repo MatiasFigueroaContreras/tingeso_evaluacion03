@@ -5,5 +5,6 @@ export type TPrueba = {
     preguntas: TPregunta[],
     respuestas: string[],
     inicio: number,
+    final: number,
     finalizado: boolean
 }

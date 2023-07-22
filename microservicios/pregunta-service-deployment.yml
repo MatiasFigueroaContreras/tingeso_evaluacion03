@@ -26,9 +26,6 @@ spec:
               value: tingeso
             - name: POSTGRES_PASSWORD
               value: tingeso
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/postgresql/data
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -37,7 +34,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: 2Mi
+            storage: 20Mi
 ---
 # Service BD
 apiVersion: v1
