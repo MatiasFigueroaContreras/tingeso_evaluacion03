@@ -27,8 +27,12 @@ export default function pruebas() {
                         </li>
                         <li>
                             La respuesta se considera correcta si es
-                            <b> exactamente </b>
+                            <b> EXACTAMENTE </b>
                             la salida del programa.
+                        </li>
+                        <li>
+                            puedes tener activo una prueba de cada nivel, ¡Tus
+                            respuestas quedaran guardadas!
                         </li>
                     </ul>
                 </section>

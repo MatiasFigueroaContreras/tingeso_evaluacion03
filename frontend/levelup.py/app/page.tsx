@@ -16,9 +16,9 @@ export default function Home() {
                 <section className={styles.section}>
                     <h3>¿QUE OFRECEMOS?</h3>
                     <ul className={styles.list}>
-                        <li>Resuelve 4 preguntas únicas en cada prueba.</li>
+                        <li>Resuelve 4 preguntas en cada prueba, según tu nivel.</li>
                         <li>
-                            Obtén resultados instantáneos y puntajes de 1 a 7.
+                            Obtén resultados instantáneos y puntajes de 1.0 a 7.0.
                         </li>
                         <li>
                             Comparte tus propias preguntas y desafía a otros.

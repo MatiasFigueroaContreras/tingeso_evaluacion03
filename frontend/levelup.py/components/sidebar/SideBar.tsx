@@ -1,13 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import styles from "./sidebar.module.css";
 import { McLaren } from "next/font/google";
+import { usePathname } from "next/navigation";
 
 const logofont = McLaren({
-    weight: '400',
+    weight: "400",
     subsets: ["latin"],
 });
 
 export default function SideBar() {
+    const pathname = usePathname();
     return (
         <aside className={styles.sidebar}>
             <h1 className={`${styles.logo} ${logofont.className}`}>
@@ -16,7 +20,12 @@ export default function SideBar() {
             </h1>
             <hr />
             <div className={styles.menu}>
-                <Link className={styles.link} href="/">
+                <Link
+                    className={`${styles.link} ${
+                        pathname == "/" ? styles.active : ""
+                    }`}
+                    href="/"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="28"
@@ -29,7 +38,12 @@ export default function SideBar() {
                     <h3>Inicio</h3>
                 </Link>
 
-                <Link className={styles.link} href="/pruebas">
+                <Link
+                    className={`${styles.link} ${
+                        pathname.includes("/pruebas") ? styles.active : ""
+                    }`}
+                    href="/pruebas"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="28"
@@ -45,7 +59,12 @@ export default function SideBar() {
                     </svg>
                     <h3>Pruebas</h3>
                 </Link>
-                <Link className={styles.link} href="/subir-preguntas">
+                <Link
+                    className={`${styles.link} ${
+                        pathname == "/subir-preguntas" ? styles.active : ""
+                    }`}
+                    href="/subir-preguntas"
+                >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="28"

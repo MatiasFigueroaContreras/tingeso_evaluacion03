@@ -9,7 +9,7 @@ import TitleHeader from "@/components/titleheader/TitleHeader";
 import PreguntaService from "@/services/PreguntaService";
 import FeedbackAlert from "@/components/feedbackalert/FeedbackAlert";
 import { FeedbackTypes } from "@/components/feedbackalert/FeedbackAlert";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { Baloo_2 } from "next/font/google";
 import { AxiosError } from "axios";
 import ButtonStyled from "@/components/buttonstyled/ButtonStyled";
@@ -24,6 +24,26 @@ export default function subirPregunta() {
     const [feedback, setFeedback] = useState("");
     const [alertType, setAlertType] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+
+    const resizeTextArea = () => {
+        const textareaUser = textAreaRef.current;
+        if (textareaUser) {
+            const lines = textareaUser.value.split("\n").length;
+            const newHeight = lines * 30 + 12;
+
+            textareaUser.style.height = `${Math.max(newHeight, 45)}px`;
+        }
+
+        const textareaReal = textAreaRef.current;
+        if (textareaReal) {
+            const lines = textareaReal.value.split("\n").length;
+            const newHeight = lines * 30 + 12;
+
+            textareaReal.style.height = `${Math.max(newHeight, 45)}px`;
+        }
+    };
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -100,9 +120,11 @@ export default function subirPregunta() {
                 </section>
                 <div className={styles.inputs}>
                     <textarea
+                        ref={textAreaRef}
                         className={`${styles.codeoutput} ${baloo.className}`}
                         placeholder="Ingrese la salida del código"
                         onChange={(e) => setCodeAnswer(e.target.value)}
+                        onInput={resizeTextArea}
                     />
                     <select
                         className={`${styles.level} ${baloo.className}`}
@@ -118,7 +140,11 @@ export default function subirPregunta() {
                         <option value="AVANZADO">Avanzado</option>
                     </select>
                 </div>
-                <ButtonStyled text="Subir pregunta" disabled={isSubmitting} type="submit"/>
+                <ButtonStyled
+                    text="Subir pregunta"
+                    disabled={isSubmitting}
+                    type="submit"
+                />
             </form>
         </>
     );

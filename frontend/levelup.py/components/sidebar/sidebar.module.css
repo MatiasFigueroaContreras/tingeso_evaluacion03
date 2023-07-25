@@ -35,7 +35,6 @@
 .menu {
     display: grid;
     margin-top: 32px;
-    padding: 10px;
     gap: 28px;
 }
 
@@ -54,4 +53,11 @@
 .menu .link h3 {
     font-weight: 600;
     font-size: 21px;
+    
+}
+
+.link.active h3::after{
+    margin-left: 18px;
+    content: "✦";
+    font-size: 16px;
 }

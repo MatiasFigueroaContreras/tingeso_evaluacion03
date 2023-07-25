@@ -56,6 +56,7 @@ export default function Pregunta({
             textareaReal.style.height = `${Math.max(newHeight, 45)}px`;
         }
     };
+    
     return (
         <section id={numero.toString()} className={styles.pregunta}>
             <div className={styles.top}>
